@@ -1,0 +1,1 @@
+gcc -std=c11 -ferror-limit=0 main_Clifford_vs_RMB_qubit.c func.c mt19937ar.c -I/opt/homebrew/opt/openblas/include/ -L/opt/homebrew/opt/openblas/lib -Wl,-rpath,/opt/homebrew/opt/openblas/lib -lopenblas -lm

@@ -1,0 +1,17 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: BME-RMB-PGM
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Maria
+    family-names: Quadeer
+    email: mariaquadeer@gmail.com
+repository-code: 'https://github.com/mariaquadeer/BME-RMB-PGM'
+keywords:
+  - Bayesian mean estimation
+license: GPL-3.0-or-later

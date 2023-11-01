@@ -1,5 +1,0 @@
-To produce data for Figure 2 use 'Pure_script.sh'
-To produce data for Figure 3 use 'Ginibre_script.sh'
-To produce data for Figure 4 use 'RankDiff_script.sh'
-To produce data for Figure 5 use 'Clifford_vs_RMB_run.sh'
-To produce data for Figures 7 and 8 use 'PGM_script.sh'

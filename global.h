@@ -1,10 +1,3 @@
-//=============================================================
-// Copyright 2023 Maria Quadeer
-// Distributed under the GNU General Public License, Version 3.
-// (See accompanying file LICENSE.txt or copy at
-// https://www.gnu.org/licenses/gpl-3.0.en.html)
-//=============================================================
-
 #include <stdio.h>
 #include <math.h>
 #include <cblas.h>
@@ -28,32 +21,97 @@ extern int L; /* no. of states in the ensemble */
 extern int N0; /* sample complexity/no. of measurements */
 extern const double zero_epsilon;
 
-// clifford_qubit elements
-lapack_complex_double Id[4];
+
+// Pauli X
 lapack_complex_double X[4];
+
+// Pauli Y
 lapack_complex_double Y[4];
+
+// Pauli Z
 lapack_complex_double Z[4];
-lapack_complex_double negI[4];
-lapack_complex_double negX[4];
-lapack_complex_double negY[4];
-lapack_complex_double negZ[4];
-lapack_complex_double iI[4];
-lapack_complex_double iX[4];
-lapack_complex_double iY[4];
-lapack_complex_double iZ[4];
-lapack_complex_double neg_iI[4];
-lapack_complex_double neg_iX[4];
-lapack_complex_double neg_iY[4];
-lapack_complex_double neg_iZ[4];
-lapack_complex_double Hadamard_X[4];
-lapack_complex_double Hadamard_X_neg[4];
-lapack_complex_double Hadamard_Y[4];
-lapack_complex_double Hadamard_Y_neg[4];
-lapack_complex_double Hadamard_Z[4];
-lapack_complex_double Hadamard_Z_neg[4];
-lapack_complex_double XY_combo[4];
-lapack_complex_double XY_combo_neg[4];
-//
+
+// 2-design elements
+lapack_complex_double U_0_0[4];
+lapack_complex_double U_pi_0[4];
+lapack_complex_double U_pi_2_0[4];
+lapack_complex_double U_pi_2_pi[4];
+lapack_complex_double U_pi_2_pi_2[4];
+lapack_complex_double U_pi_2_3pi_2[4];
+
+// Identity
+lapack_complex_double Id[4];
+
+// H
+lapack_complex_double H[4];
+
+// S
+lapack_complex_double S[4];
+
+// HS
+lapack_complex_double HS[4];
+
+// SH
+lapack_complex_double SH[4];
+
+// SS(Z)
+lapack_complex_double SS[4];
+
+// HSH
+lapack_complex_double HSH[4];
+
+// HSS (HZ)
+lapack_complex_double HSS[4];
+
+// SHS
+lapack_complex_double SHS[4];
+
+// SSH
+lapack_complex_double SSH[4];
+
+// SSS (Sd)
+lapack_complex_double SSS[4];
+
+// HSHS
+lapack_complex_double HSHS[4];
+
+// HSSH
+lapack_complex_double HSSH[4];
+
+// HSSS
+lapack_complex_double HSSS[4];
+
+// SHSS
+lapack_complex_double SHSS[4];
+
+// SSHS
+lapack_complex_double SSHS[4];
+
+// HSHSS
+lapack_complex_double HSHSS[4];
+
+// HSSHS
+lapack_complex_double HSSHS[4];
+
+// SHSSH
+lapack_complex_double SHSSH[4];
+
+// SHSSS
+lapack_complex_double SHSSS[4];
+
+// SSHSS
+lapack_complex_double SSHSS[4];
+
+// HSHSSH
+lapack_complex_double HSHSSH[4];
+
+// HSHSSS
+lapack_complex_double HSHSSS[4];
+
+// HSSHSS
+lapack_complex_double HSSHSS[4];
+/*=============================================================================*/
+
 
 double prior_constant, average_risk_prev;
 lapack_complex_double one, zero, i1;
@@ -85,6 +143,12 @@ void print_matrix(lapack_complex_double* matrix, int size);
 
 
 lapack_complex_double* random_clifford_qubit();
+
+
+lapack_complex_double* random_2Design_qubit();
+
+
+lapack_complex_double* random_1Design_qubit();
 
 
 int* from_dAlphabet_to_dBase(int *res, int base, int exponent, int inputNum);
@@ -201,4 +265,3 @@ double complex** compute_p_rho(int num_matrices, int n, double* p, double comple
 
 
 double complex * compute_sum_p_rho(int num_matrices, int n, double* p, double complex **rho);
-

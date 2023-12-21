@@ -1,0 +1,1 @@
+gcc -fsanitize=address -static-libsan -g -std=c11 -ferror-limit=0 main_Clifford_C1_enumeration.c func.c mt19937ar.c -I/opt/homebrew/opt/openblas/include/ -L/opt/homebrew/opt/openblas/lib -Wl,-rpath,/opt/homebrew/opt/openblas/lib -lopenblas -lm

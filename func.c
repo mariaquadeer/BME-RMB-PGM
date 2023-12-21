@@ -1,10 +1,3 @@
-//=============================================================
-// Copyright 2023 Maria Quadeer
-// Distributed under the GNU General Public License, Version 3.
-// (See accompanying file LICENSE.txt or copy at
-// https://www.gnu.org/licenses/gpl-3.0.en.html)
-//=============================================================
-
 /* custom function library */
 #include "global.h"
 
@@ -84,7 +77,14 @@ lapack_complex_double* random_clifford_qubit()
 {
 
     // List of all Clifford elements for a single qubit
-    lapack_complex_double* clifford_elements[24] = {Id, X, Y, Z, negI, negX, negY, negZ, iI, iX, iY, iZ, neg_iI, neg_iX, neg_iY, neg_iZ, Hadamard_X, Hadamard_X_neg, Hadamard_Y, Hadamard_Y_neg, Hadamard_Z, Hadamard_Z_neg, XY_combo, XY_combo_neg};
+    lapack_complex_double* clifford_elements[24] = {
+        Id, H, S,
+        HS, SH, SS,
+        HSH, HSS, SHS, SSH, SSS,
+        HSHS, HSSH, HSSS, SHSS, SSHS,
+        HSHSS, HSSHS, SHSSH, SHSSS, SSHSS,
+        HSHSSH, HSHSSS, HSSHSS
+      };
 
     // Randomly select a Clifford element
     int choice = rand() % 24;
@@ -101,6 +101,47 @@ lapack_complex_double* random_clifford_qubit()
     //   printf("clifford_elements[14][%d] = (%lf, %lf)\n", i, creal(clifford_elements[10][i]), cimag(clifford_elements[10][i]));
     //   fflush(stdout);
     // }
+
+    return result;
+}
+
+lapack_complex_double* random_2Design_qubit()
+{
+
+    // List of all 2Design elements for a single qubit
+    lapack_complex_double* Design_elements[6] = {U_0_0, U_pi_0, U_pi_2_0, U_pi_2_pi, U_pi_2_pi_2, U_pi_2_3pi_2};
+
+    // Randomly select a 2Design element
+    int choice = rand() % 6;
+    // printf("choice = %d\n", choice);
+    lapack_complex_double* selected_matrix = Design_elements[choice];
+
+    // Allocate space for result and copy the selected matrix
+    lapack_complex_double* result = malloc(4 * sizeof(lapack_complex_double));
+    for (int i = 0; i < 4; ++i) {
+        result[i] = selected_matrix[i];
+    }
+
+    return result;
+}
+
+
+lapack_complex_double* random_1Design_qubit()
+{
+
+    // List of all 2Design elements for a single qubit
+    lapack_complex_double* Design_elements[4] = {Id, X, Y, Z};
+
+    // Randomly select a 2Design element
+    int choice = rand() % 4;
+    // printf("choice = %d\n", choice);
+    lapack_complex_double* selected_matrix = Design_elements[choice];
+
+    // Allocate space for result and copy the selected matrix
+    lapack_complex_double* result = malloc(4 * sizeof(lapack_complex_double));
+    for (int i = 0; i < 4; ++i) {
+        result[i] = selected_matrix[i];
+    }
 
     return result;
 }
@@ -1031,6 +1072,251 @@ void normalize_log_probs(double *log_probs, int n)
     }
 }
 
+// struct risk_types func_Bayes_update_empirical_average(int x, int n)
+// {
+//
+// 	printf("******Entered func_Bayes_update_empirical_average().******\n");
+// //	getchar();
+//
+// 	int *res;
+// 	double prod;
+// 	struct risk_types r;
+// 	lapack_complex_double normalise, re_normalise, *basis_vec_temp, *trace, *p_measure, **density, *posterior;
+//
+// 	r.risk = 0.0, r.average_risk = 0.0;
+// 	normalise = lapack_make_complex_double(((double)1/(double)(n+1)), 0.0);
+// 	re_normalise = lapack_make_complex_double(n, 0.0);
+// 	printf("n: %d, NORMALISE:(%lf, %lf), Re-NORMALISE: (%lf, %lf)\n", n, creal(normalise), cimag(normalise), creal(re_normalise), cimag(re_normalise));
+// 	// getchar();
+// 	basis_vec_temp = (lapack_complex_double *) calloc(d, sizeof(lapack_complex_double));
+//   if (!basis_vec_temp) {
+//     perror("calloc failed for basis_vec_temp");
+//     exit(EXIT_FAILURE);
+//   }
+// 	trace = (lapack_complex_double *) calloc(L*d, sizeof(lapack_complex_double));
+//   if (!trace) {
+//     perror("calloc failed for trace");
+//     exit(EXIT_FAILURE);
+//   }
+// 	posterior = (lapack_complex_double *) calloc(L*d, sizeof(lapack_complex_double));
+//   if (!posterior) {
+//     perror("calloc failed for posterior");
+//     exit(EXIT_FAILURE);
+//   }
+// 	p_measure = (lapack_complex_double *) calloc(d, sizeof(lapack_complex_double));
+//   if (!p_measure) {
+//     perror("calloc failed for p_measure");
+//     exit(EXIT_FAILURE);
+//   }
+// 	density = (lapack_complex_double **) calloc(d*d, sizeof(lapack_complex_double*));
+//   if (!density) {
+//     perror("calloc failed for density");
+//     exit(EXIT_FAILURE);
+//   }
+// 	Bayes_est_empirical[n] = (lapack_complex_double **) calloc(d, sizeof(lapack_complex_double*));
+//   if (!Bayes_est_empirical[n]) {
+//     perror("calloc failed for Bayes_est_empirical[n]");
+//     exit(EXIT_FAILURE);
+//   }
+// 	Bayes_est_empirical_sum[n] = (lapack_complex_double *) calloc(d*d, sizeof(lapack_complex_double));
+//   if (!Bayes_est_empirical_sum[n]) {
+//     perror("calloc failed for Bayes_est_empirical_sum[n]");
+//     exit(EXIT_FAILURE);
+//   }
+//
+// 		// Loop over basis vector indexed by j, {B_j} and copy each vector into basis_vec_temp.
+// 			for(int j=0; j<d; j++)
+// 			{
+// 				Bayes_est_empirical[n][j] = (lapack_complex_double *) calloc(d*d, sizeof(lapack_complex_double));
+//         if (!Bayes_est_empirical[n][j]) {
+//           perror("calloc failed for Bayes_est_empirical[n][j]");
+//           exit(EXIT_FAILURE);
+//         }
+//
+// 				for(int k=0; k<d; k++) // loop over elements of j-th vector and copy corresponding d-entries of B into basis_vec_temp.
+// 				{
+// 				basis_vec_temp[k] = basis[k+j*d];
+// 				printf("printing (re, imag) of basis_vec_temp[%d]: (%lf, %lf).\n", k, creal(basis_vec_temp[k]), cimag(basis_vec_temp[k]));
+// 				// getchar();
+// 				}
+//
+// 			for(int i=0; i<L; i++)
+// 			{
+// 				// for computing tr(P_j \rho_i) = trace[i+j*d]: ZDOTC <b_j|rho_i> and then mod square it.
+//
+// 				trace[i+j*d] = cblas_zdotc(d, basis_vec_temp, 1, rho[i], 1);
+//
+// 				trace[i+j*d] = pow(cabs(trace[i+j*d]), 2);
+//
+//
+// 				printf("printing (re, imag) of trace[%d + d * %d]: (%lf, %lf).\n", i, j, creal(trace[i+j*d]), cimag(trace[i+j*d]));
+// 			 // getchar();
+//
+// 				// posterior
+// 				posterior[i+j*d]=trace[i+j*d]*prior_constant[i];
+//
+// 				printf("printing (re, imag) of posterior[%d + d * %d]: (%lf, %lf).\n", i, j, creal(posterior[i+j*d]), cimag(posterior[i+j*d]));
+// 			//	getchar();
+//
+// 				// evaluate total probability of outcome 'j'
+// 				p_measure[j] += posterior[i+j*d];
+//
+// 			} // end of i-loop
+//
+// 				printf("p_measure[%d]: %lf\n", j, creal(p_measure[j]));
+// 	//		  getchar();
+//
+// 			// Bayes_est = \sum_i posterior[i+j*d]*rho[i]. ZGEMM takes care of the sum over 'i'.
+// 				for(int i=0; i<L; i++)
+// 				{
+// 				posterior[i+j*d] /= p_measure[j];
+// 				printf("printing (re, imag) of posterior[%d + d * %d]: (%lf, %lf).\n", i, j, creal(posterior[i+j*d]), cimag(posterior[i+j*d]));
+// 			//	getchar();
+//
+// 				// Using gemm for vec --> op.
+// 				printf("Using GEMM to do vec --> op for vectors rho[i] in the ensemble at i=%d\n", i);
+// 		//		getchar();
+//
+// 				density[i] = (lapack_complex_double*) calloc(d*d, sizeof(lapack_complex_double));
+//         if (!density[i]) {
+//           perror("calloc failed for density[i]");
+//           exit(EXIT_FAILURE);
+//         }
+//
+// 				cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans, d, d, 1, &one, rho[i], d, rho[i], d, &zero, density[i], d);
+//
+// 				printf("Printing (re, imag) of density[%d][0] for testing: (%lf, %lf).\n",i, creal(density[i][0+0*d]), cimag(density[i][0+0*d]));
+// 		//		getchar();
+//
+// 				// Multiply density[i] with posterior and add to Bayes_est[j].
+// 				cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, d, d, d, &posterior[i+j*d], density[i], d, id, d, &one, Bayes_est_empirical[n][j], d);
+// 				}
+//
+// 			} // end of j-loop
+//
+// 			// Add Bayes_est_empirical for measurement outcome outcome_vector_empirical[n] to Bayes_est_empirical_sum and multiply by 1/(n+1).
+// 			outcome_vector_empirical[n] = 0; //func_inverse_sampling_quantum_states(p_measure); Need to change this when implementing this func.
+// 			printf("outcome_vector_empirical[%d]: %d\n",n, outcome_vector_empirical[n]);
+// 		//  getchar();
+//
+// 			cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, d, d, d, &one, Bayes_est_empirical[n][outcome_vector_empirical[n]], d, id, d, &one, Bayes_est_empirical_sum[n], d);
+//
+// 			if (n!=0)
+// 			{
+// 			cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, d, d, d, &re_normalise, Bayes_est_empirical_sum[n-1], d, id, d, &one, Bayes_est_empirical_sum[n], d);
+//
+// 			// printf("testing if(n!=0) condition 1st ZGEMM.\n");
+// 			// for(int k=0; k<d; k++)
+// 			// {
+// 			// 	for(int i=0; i<d; i++)
+// 			// 	{
+// 			// 		printf("(re, imag) of Bayes_est_empirical_sum[%d][%d]: (%lf, %lf).\n",i,k, creal(Bayes_est_empirical_sum[n][i+k*d]), cimag(Bayes_est_empirical_sum[n][i+k*d]));
+// 			// 		getchar();
+// 			//
+// 			// 		printf("(re, imag) of Bayes_est_empirical[%d][%d]: (%lf, %lf).\n",i,k, creal(Bayes_est_empirical[n][outcome_vector_empirical[n]][i+k*d]), cimag(Bayes_est_empirical[n][outcome_vector_empirical[n]][i+k*d]));
+// 			// 		getchar();
+// 			// 	}
+// 			// }
+//
+// 			cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, d, d, d, &zero, id, d, id, d, &normalise, Bayes_est_empirical_sum[n], d);
+//
+// 			// printf("testing if(n!=0) condition 2nd ZGEMM.\n");
+// 			// for(int k=0; k<d; k++)
+// 			// {
+// 			// 	for(int i=0; i<d; i++)
+// 			// 	{
+// 			// 		printf("(re, imag) of Bayes_est_empirical_sum[%d][%d]: (%lf, %lf).\n",i,k, creal(Bayes_est_empirical_sum[n][i+k*d]), cimag(Bayes_est_empirical_sum[n][i+k*d]));
+// 			// 		getchar();
+// 			//
+// 			// 		printf("(re, imag) of Bayes_est_empirical[%d][%d]: (%lf, %lf).\n",i,k, creal(Bayes_est_empirical[n][outcome_vector_empirical[n]][i+k*d]), cimag(Bayes_est_empirical[n][outcome_vector_empirical[n]][i+k*d]));
+// 			// 		getchar();
+// 			// 	}
+// 			// }
+// 		  }
+//
+// 	// Evaluate risk with Bayes_est for given x.
+// 			printf("******Evaluating risk of Bayes est for rho[%d].******\n", x);
+// 		//	getchar();
+//
+// 			if(!isEqual_toZero(func_rel_ent(density[x], Bayes_est_empirical_sum[n]))) // Skip j-th step if rel_ent() returns INFINITY.
+// 			{
+// 		 		for (int n1 = 0; n1 <= n; n1++)
+// 				{
+// 					r.risk += trace[x+outcome_vector_empirical[n1]*d]*func_rel_ent(density[x], Bayes_est_empirical_sum[n]);
+// 					printf("Risk: %lf.\n", r.risk);
+// 					// getchar();
+// 				}
+// 			}
+//
+//  // Now evaluate average risk.
+//  		res = (int*) calloc((n+1), sizeof(int)); // n starts from 0 hence allocating n+1 spots
+//     if (!res) {
+//       perror("calloc failed for res");
+//       exit(EXIT_FAILURE);
+//     }
+//
+// 		int power = pow((double)d, (double)(n+1));
+//
+// 		printf("printing d^n for d=%d, n=%d: %d.\n", d, n, power);
+// 	//	getchar();
+//
+// 		for (int k = 0; k < L; k++)
+// 		{
+// 				printf("entered k-loop, k=%d\n",k);
+// 			//	getchar();
+// 				// need to do dynamic nested for loops to go over all possible values of outcome_vector_empirical!!
+// 				for (int n1 = 0; n1 < power; n1++)
+// 				{
+// 					printf("entered n1-loop, n1=%d\n", n1);
+// 				//	getchar();
+//
+// 					res = from_dAlphabet_to_dBase(res, d, n+1, n1);
+//
+// 					printf("executed func from_dAlphabet_to_dBase\n");
+// 			//		getchar();
+//
+// 					for (int i = 0; i < (n+1); i++) // print res[] for n1.
+// 					{
+// 						printf("printing res[%d]: %d\n", i, res[i]);
+// 				//		getchar();
+// 					}
+// 					prod = 1.0;
+// 					cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, d, d, d, &zero, id, d, id, d, &zero, Bayes_est_empirical_sum[n], d); // setting Bayes_est_empirical_sum to zero matrix.
+//
+//           // TESTING:
+// 					// printf("testing if Bayes_est_empirical_sum[%d] is set to zero.\n",n);
+// 					// for(int k=0; k<d; k++)
+// 					// {
+// 					// 	for(int i=0; i<d; i++)
+// 					// 	{
+// 					// 		printf("(re, imag) of Bayes_est_empirical[n][res[0]][%d][%d]: (%lf, %lf).\n",i,k, creal(Bayes_est_empirical[n][res[0]][i+k*d]), cimag(Bayes_est_empirical[n][res[0]][i+k*d]));
+// 					// 		getchar();
+// 					// 	}
+// 					// }
+//
+// 					for (int m=0; m<(n+1); m++)
+// 					{
+// 						prod *= trace[k+res[m]*d];
+// 						cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, d, d, d, &one, Bayes_est_empirical[n][res[m]], d, id, d, &one, Bayes_est_empirical_sum[n], d);
+// 					}
+//
+// 					cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, d, d, d, &zero, id, d, id, d, &normalise, Bayes_est_empirical_sum[n], d);
+//
+// 					if(!isEqual_toZero(func_rel_ent(density[k], Bayes_est_empirical_sum[n]))) // skip if rel_ent() returns INFINITY.
+// 					{
+// 						prod *= prior_constant[k]*func_rel_ent(density[k], Bayes_est_empirical_sum[n]);
+//
+// 						r.average_risk += prod;
+// 					}
+// 				}
+// 		}
+//
+// 	free(res);
+//
+// 	return r;
+//
+// }
+
 
 /* Function to convert a given number between 0 and d^n
  to a base d number: 'dernary'. */
@@ -1232,6 +1518,7 @@ lapack_complex_double trace_LAPACK(int d, lapack_complex_double* A)
         tr += A[i * d + i];
     return tr;
 }
+
 
 // Function to compute the trace of the product of two PSD matrices
 double trace_product_LAPACK(int n, lapack_complex_double* A, lapack_complex_double* B)
@@ -1466,9 +1753,8 @@ double fidelity_pure(int d, lapack_complex_double* psi1, lapack_complex_double* 
 }
 
 /************************************************************************************/
-// Functions used for analysis with Pretty good measurement. //
+//Pretty good measurement//
 /************************************************************************************/
-
 /* Function to compute the square root of a positive semidefinite Hermitian matrix. */
 double complex* sqrtm(double complex* A)
 {
@@ -1872,6 +2158,7 @@ void sqrtm(int d, double complex* A, double complex* sqrtA);
 double complex trace(int d, double complex* A);
 
 */
+
 double complex* generate_random_complex_matrix()
 {
   double complex *mat = (double complex*) calloc(d*d, sizeof(double complex));
